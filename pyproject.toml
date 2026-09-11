@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-intelligence-ingestion-pipeline"
+version = "0.1.0"
+description = "Provenance-first ingestion foundation for AI intelligence data."
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg>=0.30.0",
+    "httpx>=0.28.0",
+    "pydantic>=2.10.0",
+    "PyYAML>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--basetemp=.pytest-tmp"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.setuptools]
+packages = ["src", "src.config", "src.crawlers", "src.crawlers.research", "src.crawlers.startup", "src.crawlers.product", "src.crawlers.news", "src.crawlers.jobs", "src.entities", "src.extraction", "src.extraction.providers", "src.export", "src.fetch", "src.freshness", "src.jobs", "src.observability", "src.parsing", "src.schemas", "src.storage"]

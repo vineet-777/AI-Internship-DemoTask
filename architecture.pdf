@@ -1,0 +1,106 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Length 445 >>
+stream
+BT
+/F1 18 Tf
+50 740 Td
+(AI Intelligence Ingestion Pipeline) Tj
+/F1 11 Tf
+0 -28 Td
+(Sources -> Discovery -> Queue -> Async Workers) Tj
+0 -28 Td
+(Fetch / Browser -> Raw Store -> Normalize -> Freshness Gate) Tj
+0 -28 Td
+(LLM Router -> Validation -> Entity Resolution -> PostgreSQL) Tj
+0 -28 Td
+(PostgreSQL -> Vector Store / Graph Store -> Google Sheets) Tj
+0 -28 Td
+(Cross-cutting: provenance, idempotency, caching, observability, quarantine) Tj
+ET
+endstream
+endobj
+3 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+4 0 obj
+<< /Length 446 >>
+stream
+BT
+/F1 18 Tf
+50 740 Td
+(Reliability Flows) Tj
+/F1 11 Tf
+0 -28 Td
+(413 CONTEXT TOO LARGE) Tj
+0 -28 Td
+(token estimate -> semantic heading/paragraph chunks -> extraction) Tj
+0 -28 Td
+(-> deterministic merge -> final schema validation) Tj
+0 -28 Td
+() Tj
+0 -28 Td
+(429 RATE LIMIT) Tj
+0 -28 Td
+(Retry-After -> bounded exponential backoff + jitter -> retry budget) Tj
+0 -28 Td
+(-> fallback provider -> circuit breaker -> quarantine on exhaustion) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 543 >>
+stream
+BT
+/F1 18 Tf
+50 740 Td
+(Scale and Freshness) Tj
+/F1 11 Tf
+0 -28 Td
+(500k+ records -> partitioned queue -> stateless workers -> shared durable storage) Tj
+0 -28 Td
+(Scale capacity by adding workers; apply source/provider limits and backpressure) Tj
+0 -28 Td
+() Tj
+0 -28 Td
+(source URL -> canonical URL -> idempotency key -> database uniqueness) Tj
+0 -28 Td
+(publication date -> priority parser -> UTC normalization -> 24-hour gate) Tj
+0 -28 Td
+(fresh records -> watermark -> validated export; stale/future/unknown -> reject or quarantine) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >>
+endobj
+9 0 obj
+<< /Type /Catalog /Pages 8 0 R >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000581 00000 n 
+0000000707 00000 n 
+0000001204 00000 n 
+0000001330 00000 n 
+0000001924 00000 n 
+0000002050 00000 n 
+0000002119 00000 n 
+trailer
+<< /Size 10 /Root 9 0 R >>
+startxref
+2168
+%%EOF

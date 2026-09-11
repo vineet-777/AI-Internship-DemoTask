@@ -1,0 +1,19 @@
+providers:
+  gemini:
+    enabled: false
+    model: "gemini-2.5-flash"
+    max_concurrency: 10
+    timeout_seconds: 30
+
+  groq:
+    enabled: true
+    model: "llama-3.3-70b-versatile"
+    endpoint: "https://api.groq.com/openai/v1/chat/completions"
+    max_concurrency: 10
+    timeout_seconds: 30
+
+  deepseek:
+    enabled: false
+    model: "deepseek-chat"
+    max_concurrency: 8
+    timeout_seconds: 30

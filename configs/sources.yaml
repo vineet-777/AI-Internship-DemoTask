@@ -1,0 +1,133 @@
+sources:
+  - id: arxiv
+    name: arXiv
+    record_type: research_paper
+    mode: http
+    enabled: true
+    # A first-party Atom API query for a known paper. This is deliberately a
+    # one-record vertical slice, not a claim of bulk source coverage.
+    endpoint: "https://export.arxiv.org/api/query?id_list=1706.03762"
+    metadata_endpoint_template: "https://export.arxiv.org/api/query?id_list={arxiv_id}"
+
+  - id: papers_with_code
+    name: "Papers with Code archive"
+    record_type: research_paper
+    mode: http
+    enabled: true
+    # PWC's former site redirects to Hugging Face. This is its official archive
+    # dataset, linked by paperswithcode/paperswithcode-data.
+    links_endpoint_template: "https://datasets-server.huggingface.co/rows?dataset=pwc-archive%2Flinks-between-paper-and-code&config=default&split=train&offset={offset}&length={length}"
+    batch_size: 100
+    max_records: 1000
+    require_official_implementation: true
+
+  - id: ycombinator
+    name: "Y Combinator company directory"
+    record_type: startup
+    mode: http
+    enabled: true
+    listing_url: "https://www.ycombinator.com/companies"
+    page_size: 100
+    max_records: 1000
+
+  - id: crunchbase
+    name: Crunchbase
+    record_type: startup
+    mode: api
+    enabled: false
+    reason: "Requires a licensed Crunchbase API key and plan-specific endpoint."
+
+  - id: angellist
+    name: AngelList / Wellfound
+    record_type: startup
+    mode: playwright
+    enabled: false
+    reason: "Requires a browser adapter for the JavaScript-rendered directory."
+
+  - id: product_hunt
+    name: Product Hunt
+    record_type: product
+    mode: http
+    enabled: true
+    listing_url: "https://www.producthunt.com/search?query=ai"
+    page_size: 100
+    max_records: 1000
+
+  - id: theres_an_ai_for_that
+    name: There's An AI For That
+    record_type: product
+    mode: http
+    enabled: false
+    reason: "Secondary directory is configured for later coverage expansion."
+
+  - id: techcrunch_ai
+    name: TechCrunch AI
+    record_type: news
+    mode: rss
+    enabled: true
+    feed_url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+
+  - id: venturebeat_ai
+    name: VentureBeat AI
+    record_type: news
+    mode: rss
+    enabled: true
+    feed_url: "https://venturebeat.com/category/ai/feed/"
+
+  - id: mit_technology_review_ai
+    name: MIT Technology Review AI
+    record_type: news
+    mode: rss
+    enabled: true
+    feed_url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/"
+
+  - id: openai_news
+    name: OpenAI News
+    record_type: news
+    mode: rss
+    enabled: true
+    feed_url: "https://openai.com/news/rss.xml"
+
+  - id: google_ai_blog
+    name: Google AI Blog
+    record_type: news
+    mode: rss
+    enabled: true
+    feed_url: "https://blog.google/technology/ai/rss/"
+
+  - id: remoteok_ai
+    name: Remote OK AI Jobs
+    record_type: job
+    mode: rss
+    enabled: true
+    feed_url: "https://remoteok.com/remote-ai-jobs.rss"
+
+  - id: wework_remotely_ai
+    name: We Work Remotely Programming Jobs
+    record_type: job
+    mode: rss
+    enabled: true
+    feed_url: "https://weworkremotely.com/categories/remote-programming-jobs.rss"
+
+  - id: greenhouse_ai
+    name: Greenhouse AI Jobs
+    record_type: job
+    mode: rss
+    enabled: false
+    feed_url: "https://job-boards.greenhouse.io/rss"
+    reason: "Individual Greenhouse boards require configured company feeds."
+
+  - id: lever_ai
+    name: Lever AI Jobs
+    record_type: job
+    mode: rss
+    enabled: false
+    feed_url: "https://jobs.lever.co/rss"
+    reason: "Individual Lever boards require configured company feeds."
+
+  - id: ai_jobs
+    name: AI Jobs
+    record_type: job
+    mode: rss
+    enabled: true
+    feed_url: "https://ai-jobs.net/rss/"

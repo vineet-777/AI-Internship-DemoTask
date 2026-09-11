@@ -1,0 +1,16 @@
+crawler:
+  max_concurrency: 8
+  request_timeout_seconds: 20
+  connect_timeout_seconds: 10
+  max_retries: 3
+  retry_base_delay_seconds: 0.5
+  retry_max_delay_seconds: 8.0
+  retry_jitter_seconds: 0.25
+  user_agent: "FrontierAtlasIngestionDemo/0.1"
+
+storage:
+  raw_root: data/raw
+
+github:
+  api_base_url: "https://api.github.com"
+  api_version: "2026-03-10"
