@@ -50,13 +50,88 @@ class YCombinatorAdapter(StartupSourceAdapter):
         ]
 
     async def fetch(self, url: str) -> RawResponse:
-        return await self._http_client.fetch(url)
+        initial = await self._http_client.fetch(url)
+        html_text = initial.body.decode("utf-8", errors="replace")
+        import re
+        m = re.search(r'window\.AlgoliaOpts\s*=\s*({[^;]+});', html_text)
+        if not m:
+            return initial
+
+        try:
+            opts = json.loads(m.group(1))
+            app_id = opts["app"]
+            api_key = opts["key"]
+            algolia_url = f"https://{app_id.lower()}-dsn.algolia.net/1/indexes/YCCompany_production/query"
+            headers = {
+                "X-Algolia-Application-Id": app_id,
+                "X-Algolia-API-Key": api_key,
+                "Content-Type": "application/json",
+            }
+            parsed_query = dict(parse_qsl(urlsplit(url).query))
+            page_num = max(0, int(parsed_query.get("page", "1")) - 1)
+            resp = await self._http_client.post(
+                algolia_url,
+                headers=headers,
+                json={"params": f"hitsPerPage={self._page_size}&page={page_num}"},
+            )
+            if resp.status_code == 200:
+                hits = resp.json().get("hits", [])
+                if hits:
+                    return RawResponse(
+                        url=url,
+                        status_code=200,
+                        headers={"content-type": "application/json"},
+                        body=json.dumps({"hits": hits}).encode("utf-8"),
+                    )
+        except Exception:
+            pass
+        return initial
 
     def parse(self, response: RawResponse) -> list[StartupCandidate]:
-        parser = _JsonLdParser()
-        parser.feed(response.body.decode("utf-8"))
         candidates: list[StartupCandidate] = []
         seen_urls: set[str] = set()
+
+        # Check for Algolia JSON response
+        try:
+            payload = json.loads(response.body.decode("utf-8"))
+            if isinstance(payload, dict) and "hits" in payload:
+                for hit in payload["hits"]:
+                    name = hit.get("name")
+                    if not name or not isinstance(name, str):
+                        continue
+                    website = hit.get("website") or f"https://www.ycombinator.com/companies/{hit.get('slug', name.lower())}"
+                    try:
+                        canonical = canonicalize_url(website)
+                    except Exception:
+                        continue
+                    if canonical in seen_urls:
+                        continue
+                    seen_urls.add(canonical)
+                    team_size = hit.get("team_size")
+                    emp_count = int(team_size) if isinstance(team_size, (int, float)) and team_size >= 0 else None
+                    desc = hit.get("long_description") or hit.get("one_liner") or ""
+                    candidates.append(
+                        StartupCandidate(
+                            original_url=website,
+                            canonical_url=canonical,
+                            entity_name=name.strip(),
+                            data={
+                                "description": desc[:10000] if desc else None,
+                                "headquarters": hit.get("all_locations") or None,
+                                "website": website,
+                                "employeeCount": emp_count,
+                                "rawEntityName": name.strip(),
+                            },
+                        )
+                    )
+                if candidates:
+                    return candidates
+        except Exception:
+            pass
+
+        # Fallback to HTML JSON-LD parsing
+        parser = _JsonLdParser()
+        parser.feed(response.body.decode("utf-8", errors="replace"))
         for item in parser.items:
             candidate = _candidate_from_json_ld(item)
             if candidate is None or candidate.canonical_url in seen_urls:

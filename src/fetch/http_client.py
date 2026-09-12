@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from src.fetch.retry import RetryPolicy, RetryableFailure, retry_async
+from src.fetch.rate_limiter import TokenBucketRateLimiter
 from src.observability.logging import log_event
 
 
@@ -57,8 +58,10 @@ class AsyncHttpClient:
         retry_policy: RetryPolicy,
         user_agent: str,
         transport: httpx.AsyncBaseTransport | None = None,
+        rate_limiter: TokenBucketRateLimiter | None = None,
     ) -> None:
         self._retry_policy = retry_policy
+        self._rate_limiter = rate_limiter
         self._semaphore = asyncio.Semaphore(max_concurrency)
         self._client = httpx.AsyncClient(
             follow_redirects=True,
@@ -93,6 +96,11 @@ class AsyncHttpClient:
         attempt: int,
         headers: dict[str, str] | None,
     ) -> RawResponse:
+        if self._rate_limiter is not None:
+            parsed_url = urlsplit(url)
+            if not parsed_url.netloc:  # validated by fetch(); retained defensively for direct calls
+                raise InvalidUrlError(f"Expected an absolute HTTP(S) URL, got {url!r}")
+            await self._rate_limiter.acquire(parsed_url.netloc)
         try:
             response = await self._client.get(url, headers=headers)
         except (httpx.TimeoutException, httpx.NetworkError) as exc:

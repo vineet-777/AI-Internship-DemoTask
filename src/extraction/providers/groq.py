@@ -77,13 +77,17 @@ class GroqProvider(LLMProvider):
                 },
             )
         except (httpx.TimeoutException, httpx.NetworkError) as exc:
-            raise ProviderError(f"Groq request failed: {exc}") from exc
+            raise ProviderError(f"Groq request failed: {exc}", retryable=True) from exc
         finally:
             if owns_request_client:
                 await client.aclose()
 
         if response.status_code >= 400:
-            raise ProviderError(f"Groq returned HTTP {response.status_code}: {response.text[:500]}")
+            raise ProviderError(
+                f"Groq returned HTTP {response.status_code}: {response.text[:500]}",
+                status_code=response.status_code,
+                retryable=response.status_code == 429 or response.status_code >= 500,
+            )
         try:
             payload = response.json()
             raw_text = payload["choices"][0]["message"]["content"]

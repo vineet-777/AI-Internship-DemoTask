@@ -37,13 +37,25 @@ class PostgresExportSource:
     async def read_tabs(self) -> dict[str, list[object]]:
         tabs: dict[str, list[object]] = {}
         for tab, table in POSTGRES_TABLES.items():
-            rows = await self._connection.fetch(
-                f"SELECT record_payload FROM {table} ORDER BY record_id"
-            )
-            tabs[tab] = [
-                row["record_payload"] if isinstance(row, Mapping) else row[0]
-                for row in rows
-            ]
+            if table == "entity_mapping_log":
+                rows = await self._connection.fetch(
+                    "SELECT raw_name as \"rawName\", canonical_name as \"canonicalName\", source, method, confidence, status, record_id as \"recordId\", created_at as \"createdAt\" FROM entity_mapping_log ORDER BY mapping_id"
+                )
+                tabs[tab] = [dict(row) for row in rows]
+            else:
+                rows = await self._connection.fetch(
+                    f"SELECT record_payload FROM {table} ORDER BY record_id"
+                )
+                items = []
+                for row in rows:
+                    payload = row["record_payload"] if isinstance(row, Mapping) else row[0]
+                    if isinstance(payload, str):
+                        try:
+                            payload = json.loads(payload)
+                        except Exception:
+                            pass
+                    items.append(payload)
+                tabs[tab] = items
         return tabs
 
 

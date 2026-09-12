@@ -1,7 +1,8 @@
 providers:
   gemini:
-    enabled: false
+    enabled: true
     model: "gemini-2.5-flash"
+    endpoint: "https://generativelanguage.googleapis.com/v1beta/models"
     max_concurrency: 10
     timeout_seconds: 30
 
@@ -13,7 +14,8 @@ providers:
     timeout_seconds: 30
 
   deepseek:
-    enabled: false
+    enabled: true
     model: "deepseek-chat"
+    endpoint: "https://api.deepseek.com/v1/chat/completions"
     max_concurrency: 8
     timeout_seconds: 30

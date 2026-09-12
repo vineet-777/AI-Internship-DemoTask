@@ -4,10 +4,10 @@ sources:
     record_type: research_paper
     mode: http
     enabled: true
-    # A first-party Atom API query for a known paper. This is deliberately a
-    # one-record vertical slice, not a claim of bulk source coverage.
-    endpoint: "https://export.arxiv.org/api/query?id_list=1706.03762"
+    endpoint: "https://export.arxiv.org/api/query?search_query=cat:cs.AI+OR+cat:cs.LG+OR+cat:cs.CL&start={start}&max_results={max_results}&sortBy=submittedDate&sortOrder=descending"
     metadata_endpoint_template: "https://export.arxiv.org/api/query?id_list={arxiv_id}"
+    batch_size: 100
+    max_records: 1000
 
   - id: papers_with_code
     name: "Papers with Code archive"
@@ -57,8 +57,10 @@ sources:
     name: There's An AI For That
     record_type: product
     mode: http
-    enabled: false
-    reason: "Secondary directory is configured for later coverage expansion."
+    enabled: true
+    listing_url: "https://theresanaiforthat.com/"
+    page_size: 100
+    max_records: 1000
 
   - id: techcrunch_ai
     name: TechCrunch AI
@@ -109,21 +111,19 @@ sources:
     enabled: true
     feed_url: "https://weworkremotely.com/categories/remote-programming-jobs.rss"
 
-  - id: greenhouse_ai
-    name: Greenhouse AI Jobs
+  - id: himalayas_ai
+    name: Himalayas AI Jobs
     record_type: job
     mode: rss
-    enabled: false
-    feed_url: "https://job-boards.greenhouse.io/rss"
-    reason: "Individual Greenhouse boards require configured company feeds."
+    enabled: true
+    feed_url: "https://himalayas.app/jobs/rss?category=artificial-intelligence"
 
-  - id: lever_ai
-    name: Lever AI Jobs
+  - id: jobspresso_ai
+    name: Jobspresso Remote AI Jobs
     record_type: job
     mode: rss
-    enabled: false
-    feed_url: "https://jobs.lever.co/rss"
-    reason: "Individual Lever boards require configured company feeds."
+    enabled: true
+    feed_url: "https://jobspresso.co/category/remote-dev-jobs/feed/"
 
   - id: ai_jobs
     name: AI Jobs

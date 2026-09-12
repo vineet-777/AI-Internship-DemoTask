@@ -12,6 +12,17 @@ from pydantic import BaseModel
 class ProviderError(RuntimeError):
     """A provider could not return a usable structured response."""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        status_code: int | None = None,
+        retryable: bool = False,
+    ) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+        self.retryable = retryable
+
 
 @dataclass(frozen=True, slots=True)
 class ExtractionResult:

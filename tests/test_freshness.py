@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from src.freshness.dedupe import DedupeIndex
+from src.freshness.dedupe import DedupeIndex, RedisDedupeIndex
 from src.freshness.policies import evaluate_freshness, select_date
 from src.freshness.watermark import WatermarkStore
 
@@ -46,6 +46,28 @@ def test_dedupe_can_reload_persistent_identity_layers(tmp_path: Path) -> None:
     assert index.check_and_add("news", "https://example.com/story", "Same story")
     restored = DedupeIndex(path=path)
     assert not restored.check_and_add("news", "https://example.com/story", "Different text")
+
+
+async def test_redis_dedupe_claims_url_and_content_atomically() -> None:
+    class FakeRedis:
+        def __init__(self) -> None:
+            self.calls: list[tuple[str, int, str, str]] = []
+            self.claimed = False
+
+        async def eval(self, script: str, key_count: int, url_key: str, hash_key: str) -> int:
+            self.calls.append((script, key_count, url_key, hash_key))
+            if self.claimed:
+                return 0
+            self.claimed = True
+            return 1
+
+    redis = FakeRedis()
+    index = RedisDedupeIndex("redis://unused", client=redis)
+    assert await index.check_and_add("news", "https://example.com/story", "Same story")
+    assert not await index.check_and_add("news", "https://example.com/story", "Different text")
+    assert redis.calls[0][1] == 2
+    assert ":url:" in redis.calls[0][2]
+    assert ":content:" in redis.calls[0][3]
 
 
 def test_watermark_persists_highest_timestamp(tmp_path: Path) -> None:

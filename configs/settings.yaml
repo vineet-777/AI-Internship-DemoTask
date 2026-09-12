@@ -7,6 +7,8 @@ crawler:
   retry_max_delay_seconds: 8.0
   retry_jitter_seconds: 0.25
   user_agent: "FrontierAtlasIngestionDemo/0.1"
+  rate_limit_per_second: 5.0
+  rate_limit_burst: 10
 
 storage:
   raw_root: data/raw

@@ -25,9 +25,16 @@ class ArxivAtomAdapter(SourceAdapter[ResearchPaperCandidate]):
         self.source_id = settings.id
         self.source_name = settings.name
         self._endpoint = settings.endpoint
+        self._batch_size = getattr(settings, "batch_size", 100)
+        self._max_records = getattr(settings, "max_records", 1000)
         self._http_client = http_client
 
     async def discover(self) -> list[str]:
+        if "{start}" in self._endpoint and "{max_results}" in self._endpoint:
+            return [
+                self._endpoint.format(start=offset, max_results=self._batch_size)
+                for offset in range(0, self._max_records, self._batch_size)
+            ]
         return [self._endpoint]
 
     async def fetch(self, url: str) -> RawResponse:
